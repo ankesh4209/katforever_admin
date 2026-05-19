@@ -235,7 +235,7 @@ export default function CreateProduct() {
                                                 name="sku"
                                                 value={formData.sku}
                                                 onChange={handleChange}
-                                                placeholder="e.g. LUG-SAR-001"
+                                                placeholder="e.g. katforever-product-001"
                                                 className={`border-gray-300 ${errors.sku ? 'border-red-500' : ''}`}
                                             />
                                             {errors.sku && <p className="text-sm text-red-500 mt-1">{errors.sku}</p>}

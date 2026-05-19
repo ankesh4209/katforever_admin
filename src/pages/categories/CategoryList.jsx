@@ -85,7 +85,7 @@ export default function CategoryList() {
                 <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
                     <div className="flex flex-col sm:flex-row gap-4">
                         <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                             <Input
                                 placeholder="Search categories..."
                                 value={searchTerm}

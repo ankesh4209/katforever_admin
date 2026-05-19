@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,8 @@ import {
 export default function Header({ onToggleSidebar }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [searchText, setSearchText] = useState(() => searchParams.get('search') || '');
 
   const notifications = [
     { id: 1, type: "order", title: "New Order #1234", message: "Order placed", read: false },
@@ -63,6 +65,16 @@ export default function Header({ onToggleSidebar }) {
     navigate("/login");
   };
 
+  const handleSearchSubmit = (event) => {
+    event.preventDefault();
+    const query = searchText.trim();
+    if (query) {
+      navigate(`/products?search=${encodeURIComponent(query)}`);
+    } else {
+      navigate('/products');
+    }
+  };
+
   return (
     <header className="sticky top-0 z-30 w-full border-b border-slate-200 bg-white">
       <div className="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -79,14 +91,18 @@ export default function Header({ onToggleSidebar }) {
 
         {/* Search */}
         <div className="flex-1 max-w-xl">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4" />
-            <Input
-              type="search"
-              placeholder="Search..."
-              className="pl-10 h-10 bg-slate-100 border border-slate-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-            />
-          </div>
+          <form onSubmit={handleSearchSubmit}>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 h-4 w-4 pointer-events-none" />
+              <Input
+                type="search"
+                placeholder="Search..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="pl-10 h-10 bg-slate-100 border border-slate-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
+            </div>
+          </form>
         </div>
 
         {/* Right Section */}

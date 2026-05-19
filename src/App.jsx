@@ -19,10 +19,16 @@ import EditBanner from './pages/banners/EditBanner';
 import OfferList from './pages/offers/OfferList';
 import CreateOffer from './pages/offers/CreateOffer';
 import EditOffer from './pages/offers/EditOffer';
+import Returns from './pages/orders/Returns';
+import Settings from './pages/orders/Settings';
+import Reports from './pages/orders/Reports';
+import Shipping from './pages/orders/Shipping';
+import Users from './pages/orders/Users';
 
 // Order Routes
 import Orders from './pages/orders/Orders';
 import OrderDetails from './pages/orders/OrderDetails';
+import { Import } from 'lucide-react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -72,11 +78,11 @@ function App() {
                       {/* Order Routes */}
                       <Route path="/orders" element={<Orders />} />
                       <Route path="/orders/:id" element={<OrderDetails />} />
-                      <Route path="/users" element={<div className="text-2xl">Users (Coming Soon)</div>} />
-                      <Route path="/returns" element={<div className="text-2xl">Returns (Coming Soon)</div>} />
-                      <Route path="/shipping" element={<div className="text-2xl">Shipping (Coming Soon)</div>} />
-                      <Route path="/reports" element={<div className="text-2xl">Reports (Coming Soon)</div>} />
-                      <Route path="/settings" element={<div className="text-2xl">Settings (Coming Soon)</div>} />
+                      <Route path="/users" element={<Users />} />
+                      <Route path="/returns" element={<Returns />} />
+                      <Route path="/shipping" element={<Shipping />} />
+                      <Route path="/reports" element={<Reports />} />
+                      <Route path="/settings" element={<Settings />} />
                     </Routes>
                   </Layout>
                 </PrivateRoute>

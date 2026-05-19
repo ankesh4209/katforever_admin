@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useProducts, useDeleteProduct } from '@/hooks/useProducts';
 import { useCategories } from '@/hooks/useCategories';
 import { Button } from '@/components/ui/button';
@@ -27,14 +27,22 @@ import { getImageUrl } from '@/lib/utils';
 
 export default function ProductList() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const deleteMutation = useDeleteProduct();
     const { data: categories = [] } = useCategories();
 
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(() => searchParams.get('search') || '');
     const [filterCategory, setFilterCategory] = useState('');
     const [filterActive, setFilterActive] = useState('all');
     const [page, setPage] = useState(1);
     const [deleteDialog, setDeleteDialog] = useState({ open: false, product: null });
+
+    useEffect(() => {
+        const paramSearch = searchParams.get('search') || '';
+        if (paramSearch !== searchTerm) {
+            setSearchTerm(paramSearch);
+        }
+    }, [searchParams, searchTerm]);
 
     const { data: productsData, isLoading } = useProducts({
         page,
@@ -90,7 +98,7 @@ export default function ProductList() {
                 <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
                     <div className="flex flex-col sm:flex-row gap-4">
                         <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                             <Input
                                 placeholder="Search products..."
                                 value={searchTerm}
