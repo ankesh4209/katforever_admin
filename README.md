@@ -92,21 +92,7 @@ Expected response:
 
 ---
 
-## 📋 Available Menu Items
 
-Once logged in, you'll see the sidebar with:
-
-1. **Dashboard** - Overview with stats
-2. **Products** - (Coming Soon)
-3. **Categories** - (Coming Soon)
-4. **Orders** - (Coming Soon)
-5. **Users** - (Coming Soon)
-6. **Returns** - (Coming Soon)
-7. **Shipping** - (Coming Soon)
-8. **Banners** - (Coming Soon)
-9. **Offers** - (Coming Soon)
-10. **Reports** - (Coming Soon)
-11. **Settings** - (Coming Soon)
 
 ---
 
