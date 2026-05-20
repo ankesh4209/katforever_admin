@@ -6,242 +6,316 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog';
-import { Plus, Search, Edit, Trash2, Image as ImageIcon } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  Image as ImageIcon,
+  Sparkles,
+  FolderKanban,
+  Filter,
+} from 'lucide-react';
 import { getImageUrl } from '@/lib/utils';
 
 export default function CategoryList() {
-    const navigate = useNavigate();
-    const { data: categories = [], isLoading } = useCategories();
-    const deleteMutation = useDeleteCategory();
+  const navigate = useNavigate();
+  const { data: categories = [], isLoading } = useCategories();
+  const deleteMutation = useDeleteCategory();
 
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterActive, setFilterActive] = useState('all');
-    const [deleteDialog, setDeleteDialog] = useState({ open: false, category: null });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterActive, setFilterActive] = useState('all');
+  const [deleteDialog, setDeleteDialog] = useState({
+    open: false,
+    category: null,
+  });
 
-    const filteredCategories = categories.filter((category) => {
-        const matchesSearch = category.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesFilter =
-            filterActive === 'all' ||
-            (filterActive === 'active' && category.isActive) ||
-            (filterActive === 'inactive' && !category.isActive);
-        return matchesSearch && matchesFilter;
-    });
+  const filteredCategories = categories.filter((category) => {
+    const matchesSearch = category.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
 
-    const handleDelete = async () => {
-        if (deleteDialog.category) {
-            await deleteMutation.mutateAsync(deleteDialog.category._id);
-            setDeleteDialog({ open: false, category: null });
-        }
-    };
+    const matchesFilter =
+      filterActive === 'all' ||
+      (filterActive === 'active' && category.isActive) ||
+      (filterActive === 'inactive' && !category.isActive);
 
-    if (isLoading) {
-        return (
-            <div className="p-8 space-y-6">
-                <Skeleton className="h-10 w-64" />
-                <Skeleton className="h-96" />
-            </div>
-        );
+    return matchesSearch && matchesFilter;
+  });
+
+  const handleDelete = async () => {
+    if (deleteDialog.category) {
+      await deleteMutation.mutateAsync(deleteDialog.category._id);
+      setDeleteDialog({ open: false, category: null });
     }
+  };
 
+  if (isLoading) {
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <div className="bg-white border-b border-gray-200 px-8 py-6">
-                <div className="flex items-center justify-between max-w-7xl mx-auto">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
-                        <p className="text-sm text-gray-500 mt-1">
-                            {filteredCategories.length} {filteredCategories.length === 1 ? 'category' : 'categories'}
-                        </p>
-                    </div>
-                    <Button
-                        onClick={() => navigate('/categories/create')}
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Add Category
-                    </Button>
-                </div>
-            </div>
-
-            {/* Content */}
-            <div className="max-w-7xl mx-auto px-8 py-8">
-                {/* Filters */}
-                <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="flex-1 relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                            <Input
-                                placeholder="Search categories..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 border-gray-300"
-                            />
-                        </div>
-                        <div className="flex gap-2">
-                            <Button
-                                variant={filterActive === 'all' ? 'default' : 'outline'}
-                                onClick={() => setFilterActive('all')}
-                                size="sm"
-                                className={filterActive === 'all' ? 'bg-blue-600 hover:bg-blue-700' : 'border-gray-300'}
-                            >
-                                All
-                            </Button>
-                            <Button
-                                variant={filterActive === 'active' ? 'default' : 'outline'}
-                                onClick={() => setFilterActive('active')}
-                                size="sm"
-                                className={filterActive === 'active' ? 'bg-blue-600 hover:bg-blue-700' : 'border-gray-300'}
-                            >
-                                Active
-                            </Button>
-                            <Button
-                                variant={filterActive === 'inactive' ? 'default' : 'outline'}
-                                onClick={() => setFilterActive('inactive')}
-                                size="sm"
-                                className={filterActive === 'inactive' ? 'bg-blue-600 hover:bg-blue-700' : 'border-gray-300'}
-                            >
-                                Inactive
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Table */}
-                <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-                    {filteredCategories.length === 0 ? (
-                        <div className="text-center py-16">
-                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                                <ImageIcon className="h-8 w-8 text-gray-400" />
-                            </div>
-                            <p className="text-gray-900 font-medium mb-1">No categories found</p>
-                            <p className="text-sm text-gray-500 mb-4">Get started by creating a new category</p>
-                            <Button
-                                onClick={() => navigate('/categories/create')}
-                                className="bg-blue-600 hover:bg-blue-700 text-white"
-                            >
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Category
-                            </Button>
-                        </div>
-                    ) : (
-                        <Table>
-                            <TableHeader>
-                                <TableRow className="bg-gray-50 border-b border-gray-200">
-                                    <TableHead className="text-xs font-semibold text-gray-700">Image</TableHead>
-                                    <TableHead className="text-xs font-semibold text-gray-700">Name</TableHead>
-                                    <TableHead className="text-xs font-semibold text-gray-700">Description</TableHead>
-                                    <TableHead className="text-xs font-semibold text-gray-700 text-center">Order</TableHead>
-                                    <TableHead className="text-xs font-semibold text-gray-700 text-center">Status</TableHead>
-                                    <TableHead className="text-xs font-semibold text-gray-700 text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {filteredCategories.map((category) => (
-                                    <TableRow key={category._id} className="border-b border-gray-100 hover:bg-gray-50">
-                                        <TableCell className="py-4">
-                                            {category.imageUrl ? (
-                                                <img
-                                                    src={getImageUrl(category.imageUrl)}
-                                                    alt={category.name}
-                                                    className="w-12 h-12 object-cover rounded-lg border border-gray-200"
-                                                />
-                                            ) : (
-                                                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
-                                                    <ImageIcon className="h-6 w-6 text-gray-400" />
-                                                </div>
-                                            )}
-                                        </TableCell>
-                                        <TableCell className="font-medium text-gray-900">{category.name}</TableCell>
-                                        <TableCell className="text-gray-600 text-sm max-w-md truncate">
-                                            {category.description || '-'}
-                                        </TableCell>
-                                        <TableCell className="text-center">
-                                            <Badge variant="outline" className="border-gray-300 text-gray-700">
-                                                {category.displayOrder}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-center">
-                                            <Badge
-                                                className={
-                                                    category.isActive
-                                                        ? 'bg-green-100 text-green-700 border-0'
-                                                        : 'bg-gray-100 text-gray-700 border-0'
-                                                }
-                                            >
-                                                {category.isActive ? 'Active' : 'Inactive'}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => navigate(`/categories/edit/${category._id}`)}
-                                                    className="text-gray-600 hover:text-blue-600 hover:bg-blue-50"
-                                                >
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => setDeleteDialog({ open: true, category })}
-                                                    className="text-gray-600 hover:text-red-600 hover:bg-red-50"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    )}
-                </div>
-            </div>
-
-            {/* Delete Dialog */}
-            <Dialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ open, category: null })}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Delete Category</DialogTitle>
-                        <DialogDescription>
-                            Are you sure you want to delete "{deleteDialog.category?.name}"? This action cannot be undone.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button
-                            variant="outline"
-                            onClick={() => setDeleteDialog({ open: false, category: null })}
-                            className="border-gray-300"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={handleDelete}
-                            disabled={deleteMutation.isLoading}
-                            className="bg-red-600 hover:bg-red-700 text-white"
-                        >
-                            {deleteMutation.isLoading ? 'Deleting...' : 'Delete'}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-        </div>
+      <div className="min-h-screen bg-[#F8F6F2] p-6 space-y-6">
+        <Skeleton className="h-12 w-72 rounded-xl" />
+        <Skeleton className="h-[480px] rounded-3xl" />
+      </div>
     );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#F8F6F2]">
+      <div className="border-b border-[#E8DED3] bg-white/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-[1500px] flex-col gap-4 px-4 py-6 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+          <div>
+            <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#C9A06C]/10 px-3 py-1 text-xs font-semibold text-[#9B743F]">
+              <Sparkles size={14} />
+              Category Management
+            </div>
+
+            <h1 className="text-2xl font-bold text-[#2A1416] sm:text-3xl">
+              Categories
+            </h1>
+
+            <p className="mt-1 text-sm text-[#7A6A62]">
+              {filteredCategories.length}{' '}
+              {filteredCategories.length === 1 ? 'category' : 'categories'} found
+            </p>
+          </div>
+
+          <Button
+            onClick={() => navigate('/categories/create')}
+            className="rounded-xl bg-[#C9A06C] px-5 text-white hover:bg-[#B88D57]"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add Category
+          </Button>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-[1500px] px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mb-6 rounded-3xl border border-[#E8DED3] bg-white p-5 shadow-sm">
+          <div className="mb-4 flex items-center gap-2 text-sm font-semibold text-[#2A1416]">
+            <Filter size={16} className="text-[#C9A06C]" />
+            Filters
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_auto]">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A7B72]" />
+
+              <Input
+                placeholder="Search categories..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="h-12 rounded-xl border-[#E2D5C5] bg-[#FCFAF7] pl-11 focus:border-[#C9A06C]"
+              />
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {['all', 'active', 'inactive'].map((status) => (
+                <Button
+                  key={status}
+                  type="button"
+                  variant="outline"
+                  onClick={() => setFilterActive(status)}
+                  className={`h-12 rounded-xl capitalize ${
+                    filterActive === status
+                      ? 'border-[#C9A06C] bg-[#C9A06C] text-white hover:bg-[#B88D57]'
+                      : 'border-[#E2D5C5] bg-white text-[#2A1416] hover:bg-[#FAF7F2]'
+                  }`}
+                >
+                  {status}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="overflow-hidden rounded-3xl border border-[#E8DED3] bg-white shadow-sm">
+          {filteredCategories.length === 0 ? (
+            <div className="flex flex-col items-center justify-center px-6 py-20 text-center">
+              <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-[#C9A06C]/10">
+                <FolderKanban className="h-9 w-9 text-[#C9A06C]" />
+              </div>
+
+              <p className="mb-1 text-lg font-semibold text-[#2A1416]">
+                No categories found
+              </p>
+
+              <p className="mb-6 text-sm text-[#7A6A62]">
+                Try changing filters or create a new category.
+              </p>
+
+              <Button
+                onClick={() => navigate('/categories/create')}
+                className="rounded-xl bg-[#C9A06C] text-white hover:bg-[#B88D57]"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add Category
+              </Button>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-b border-[#E8DED3] bg-[#FAF7F2]">
+                    <TableHead className="text-xs font-semibold text-[#7A6A62]">
+                      Image
+                    </TableHead>
+                    <TableHead className="text-xs font-semibold text-[#7A6A62]">
+                      Category
+                    </TableHead>
+                    <TableHead className="text-xs font-semibold text-[#7A6A62]">
+                      Description
+                    </TableHead>
+                    <TableHead className="text-center text-xs font-semibold text-[#7A6A62]">
+                      Order
+                    </TableHead>
+                    <TableHead className="text-center text-xs font-semibold text-[#7A6A62]">
+                      Status
+                    </TableHead>
+                    <TableHead className="text-right text-xs font-semibold text-[#7A6A62]">
+                      Actions
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+
+                <TableBody>
+                  {filteredCategories.map((category) => (
+                    <TableRow
+                      key={category._id}
+                      className="border-b border-[#F1E8DD] hover:bg-[#FCFAF7]"
+                    >
+                      <TableCell className="py-4">
+                        {category.imageUrl ? (
+                          <img
+                            src={getImageUrl(category.imageUrl)}
+                            alt={category.name}
+                            className="h-14 w-14 rounded-2xl border border-[#E8DED3] object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-[#E8DED3] bg-[#FAF7F2]">
+                            <ImageIcon className="h-6 w-6 text-[#B8A99B]" />
+                          </div>
+                        )}
+                      </TableCell>
+
+                      <TableCell>
+                        <p className="font-semibold text-[#2A1416]">
+                          {category.name}
+                        </p>
+                      </TableCell>
+
+                      <TableCell className="max-w-md truncate text-sm text-[#7A6A62]">
+                        {category.description || '-'}
+                      </TableCell>
+
+                      <TableCell className="text-center">
+                        <Badge
+                          variant="outline"
+                          className="border-[#E2D5C5] bg-[#FAF7F2] text-[#7A6A62]"
+                        >
+                          {category.displayOrder}
+                        </Badge>
+                      </TableCell>
+
+                      <TableCell className="text-center">
+                        <Badge
+                          className={
+                            category.isActive
+                              ? 'border-0 bg-green-100 text-green-700'
+                              : 'border-0 bg-gray-100 text-gray-600'
+                          }
+                        >
+                          {category.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </TableCell>
+
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              navigate(`/categories/edit/${category._id}`)
+                            }
+                            className="rounded-xl text-[#7A6A62] hover:bg-[#C9A06C]/10 hover:text-[#C9A06C]"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              setDeleteDialog({ open: true, category })
+                            }
+                            className="rounded-xl text-[#7A6A62] hover:bg-red-50 hover:text-red-600"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <Dialog
+        open={deleteDialog.open}
+        onOpenChange={(open) =>
+          setDeleteDialog({ open, category: null })
+        }
+      >
+        <DialogContent className="rounded-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-[#2A1416]">
+              Delete Category
+            </DialogTitle>
+
+            <DialogDescription>
+              Are you sure you want to delete "
+              {deleteDialog.category?.name}"? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() =>
+                setDeleteDialog({ open: false, category: null })
+              }
+              className="rounded-xl border-[#E2D5C5]"
+            >
+              Cancel
+            </Button>
+
+            <Button
+              onClick={handleDelete}
+              disabled={deleteMutation.isLoading}
+              className="rounded-xl bg-red-600 text-white hover:bg-red-700"
+            >
+              {deleteMutation.isLoading ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 }

@@ -1,4 +1,4 @@
-import api from './axios';
+import api from '@/lib/api';
 
 export const getAllReturns = async () => {
   const { data } = await api.get('/returns/admin/all');

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
-import { Upload, X } from 'lucide-react';
+import { Upload, X, Sparkles, PackagePlus, IndianRupee, ImagePlus } from 'lucide-react';
 import api from '@/lib/api';
 import { getImageUrl } from '@/lib/utils';
 import ImageCropper from '@/components/ImageCropper';
@@ -45,16 +45,16 @@ export default function CreateProduct() {
     const [cropperOpen, setCropperOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
 
-
-
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormData(prev => ({
+
+        setFormData((prev) => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value,
         }));
+
         if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
+            setErrors((prev) => ({ ...prev, [name]: '' }));
         }
     };
 
@@ -62,26 +62,26 @@ export default function CreateProduct() {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Validate file type
         const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+
         if (!allowedTypes.includes(file.type)) {
-            setErrors(prev => ({ ...prev, images: 'Only image files are allowed' }));
+            setErrors((prev) => ({ ...prev, images: 'Only image files are allowed' }));
             return;
         }
 
         if (file.size > 5 * 1024 * 1024) {
-            setErrors(prev => ({ ...prev, images: 'Image size must be less than 5MB' }));
+            setErrors((prev) => ({ ...prev, images: 'Image size must be less than 5MB' }));
             return;
         }
 
         const reader = new FileReader();
+
         reader.onload = () => {
             setSelectedImage(reader.result);
             setCropperOpen(true);
         };
-        reader.readAsDataURL(file);
 
-        // Clear input
+        reader.readAsDataURL(file);
         e.target.value = null;
     };
 
@@ -91,6 +91,7 @@ export default function CreateProduct() {
 
     const handleUpload = async (file) => {
         setUploadingImage(true);
+
         try {
             const formDataToUpload = new FormData();
             formDataToUpload.append('image', file);
@@ -99,15 +100,16 @@ export default function CreateProduct() {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
-            setFormData(prev => ({
+            setFormData((prev) => ({
                 ...prev,
                 images: [...prev.images, data.imageUrl],
             }));
-            setErrors(prev => ({ ...prev, images: '' }));
+
+            setErrors((prev) => ({ ...prev, images: '' }));
         } catch (error) {
-            setErrors(prev => ({
+            setErrors((prev) => ({
                 ...prev,
-                images: error.response?.data?.message || 'Failed to upload images'
+                images: error.response?.data?.message || 'Failed to upload images',
             }));
         } finally {
             setUploadingImage(false);
@@ -115,38 +117,41 @@ export default function CreateProduct() {
     };
 
     const removeImage = (index) => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
             images: prev.images.filter((_, i) => i !== index),
         }));
     };
 
     const toggleSize = (size) => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
             availableSizes: prev.availableSizes.includes(size)
-                ? prev.availableSizes.filter(s => s !== size)
+                ? prev.availableSizes.filter((s) => s !== size)
                 : [...prev.availableSizes, size],
         }));
     };
 
     const toggleColor = (color) => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
             availableColors: prev.availableColors.includes(color)
-                ? prev.availableColors.filter(c => c !== color)
+                ? prev.availableColors.filter((c) => c !== color)
                 : [...prev.availableColors, color],
         }));
     };
 
     const validate = () => {
         const newErrors = {};
+
         if (!formData.sku.trim()) newErrors.sku = 'SKU is required';
         if (!formData.name.trim()) newErrors.name = 'Product name is required';
         if (!formData.price) newErrors.price = 'Price is required';
         if (!formData.categoryId) newErrors.categoryId = 'Category is required';
         if (!formData.description.trim()) newErrors.description = 'Description is required';
+
         setErrors(newErrors);
+
         return Object.keys(newErrors).length === 0;
     };
 
@@ -161,12 +166,12 @@ export default function CreateProduct() {
     };
 
     const removeSection = (index) => {
-        const newSections = sections.filter((_, i) => i !== index);
-        setSections(newSections);
+        setSections(sections.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         if (!validate()) return;
 
         const productData = {
@@ -187,314 +192,352 @@ export default function CreateProduct() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <div className="bg-white border-b border-gray-200 px-8 py-4">
-                <div className="flex items-center justify-between max-w-7xl mx-auto">
+        <div className="min-h-screen bg-[#F8F6F2]">
+            <div className="top-0 z-30 border-b border-[#E8DED3] bg-white/90 backdrop-blur-xl">
+                <div className="mx-auto flex max-w-[1500px] flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Add a product</h1>
+                        <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#C9A06C]/10 px-3 py-1 text-xs font-semibold text-[#9B743F]">
+                            <Sparkles size={14} />
+                            Kat Forever Admin
+                        </div>
+
+                        <h1 className="text-2xl font-bold text-[#2A1416] sm:text-3xl">
+                            Add New Product
+                        </h1>
+
+                        <p className="mt-1 text-sm text-[#7A6A62]">
+                            Create a premium product listing with images, pricing and variants.
+                        </p>
                     </div>
+
                     <div className="flex gap-3">
                         <Button
                             type="button"
                             variant="outline"
                             onClick={() => navigate('/products')}
-                            className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                            className="rounded-xl border-[#E2D5C5] bg-white text-[#2A1416] hover:bg-[#FAF7F2]"
                         >
                             Discard
                         </Button>
+
                         <Button
                             onClick={handleSubmit}
                             disabled={createMutation.isLoading}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                            className="rounded-xl bg-[#C9A06C] px-6 text-white hover:bg-[#B88D57]"
                         >
-                            {createMutation.isLoading ? 'Adding...' : 'Add product'}
+                            {createMutation.isLoading ? 'Adding...' : 'Add Product'}
                         </Button>
                     </div>
                 </div>
             </div>
 
-            {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-8 py-8">
+            <div className="mx-auto max-w-[1500px] px-4 py-8 sm:px-6 lg:px-8">
                 <form onSubmit={handleSubmit}>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        {/* Left Column */}
-                        <div className="lg:col-span-2 space-y-6">
-                            {/* Basic Information */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-6">Basic Information</h3>
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                        <div className="space-y-6 lg:col-span-2">
+                            <Card className="overflow-hidden rounded-3xl border-[#E8DED3] bg-white shadow-sm">
+                                <CardContent className="p-6 sm:p-8">
+                                    <div className="mb-7 flex items-center gap-3">
+                                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#C9A06C]/10 text-[#C9A06C]">
+                                            <PackagePlus size={22} />
+                                        </div>
+
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-[#2A1416]">
+                                                Basic Information
+                                            </h3>
+                                            <p className="text-sm text-[#7A6A62]">
+                                                Add product identity and description.
+                                            </p>
+                                        </div>
+                                    </div>
 
                                     <div className="space-y-5">
                                         <div>
-                                            <Label htmlFor="sku" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                SKU (Stock Keeping Unit) <span className="text-red-500">*</span>
+                                            <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                                                SKU <span className="text-red-500">*</span>
                                             </Label>
+
                                             <Input
-                                                id="sku"
                                                 name="sku"
                                                 value={formData.sku}
                                                 onChange={handleChange}
                                                 placeholder="e.g. katforever-product-001"
-                                                className={`border-gray-300 ${errors.sku ? 'border-red-500' : ''}`}
+                                                className={`h-12 rounded-xl border-[#E2D5C5] bg-[#FCFAF7] focus:border-[#C9A06C] ${errors.sku ? 'border-red-500' : ''}`}
                                             />
-                                            {errors.sku && <p className="text-sm text-red-500 mt-1">{errors.sku}</p>}
+
+                                            {errors.sku && <p className="mt-1 text-sm text-red-500">{errors.sku}</p>}
                                         </div>
 
                                         <div>
-                                            <Label htmlFor="name" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                Product name <span className="text-red-500">*</span>
+                                            <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                                                Product Name <span className="text-red-500">*</span>
                                             </Label>
+
                                             <Input
-                                                id="name"
                                                 name="name"
                                                 value={formData.name}
                                                 onChange={handleChange}
-                                                placeholder="e.g., Banarasi Silk Saree"
-                                                className={`border-gray-300 ${errors.name ? 'border-red-500' : ''}`}
+                                                placeholder="e.g. Banarasi Silk Saree"
+                                                className={`h-12 rounded-xl border-[#E2D5C5] bg-[#FCFAF7] focus:border-[#C9A06C] ${errors.name ? 'border-red-500' : ''}`}
                                             />
-                                            {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
+
+                                            {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
                                         </div>
 
                                         <div>
-                                            <Label htmlFor="description" className="text-sm font-medium text-gray-700 mb-2 block">
+                                            <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
                                                 Description <span className="text-red-500">*</span>
                                             </Label>
+
                                             <Textarea
-                                                id="description"
                                                 name="description"
                                                 value={formData.description}
                                                 onChange={handleChange}
                                                 placeholder="Enter product description..."
-                                                rows={4}
-                                                className={`border-gray-300 resize-none ${errors.description ? 'border-red-500' : ''}`}
+                                                rows={5}
+                                                className={`rounded-xl border-[#E2D5C5] bg-[#FCFAF7] resize-none focus:border-[#C9A06C] ${errors.description ? 'border-red-500' : ''}`}
                                             />
-                                            {errors.description && <p className="text-sm text-red-500 mt-1">{errors.description}</p>}
+
+                                            {errors.description && <p className="mt-1 text-sm text-red-500">{errors.description}</p>}
                                         </div>
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            {/* Additional Information Sections (Dynamic) */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <div className="flex justify-between items-center mb-6">
-                                        <h3 className="text-base font-semibold text-gray-900">Additional Information Sections</h3>
-                                        <Button type="button" onClick={addSection} variant="outline" size="sm" className="bg-gray-50 text-gray-700 hover:bg-gray-100">
-                                            + Add Section
+                            <Card className="overflow-hidden rounded-3xl border-[#E8DED3] bg-white shadow-sm">
+                                <CardContent className="p-6 sm:p-8">
+                                    <div className="mb-7 flex items-center justify-between gap-4">
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-[#2A1416]">
+                                                Additional Sections
+                                            </h3>
+                                            <p className="text-sm text-[#7A6A62]">
+                                                Add product details, care guide and delivery info.
+                                            </p>
+                                        </div>
+
+                                        <Button
+                                            type="button"
+                                            onClick={addSection}
+                                            variant="outline"
+                                            size="sm"
+                                            className="rounded-xl border-[#E2D5C5] bg-[#FAF7F2] text-[#2A1416] hover:bg-[#C9A06C] hover:text-white"
+                                        >
+                                            + Add
                                         </Button>
                                     </div>
 
-                                    <div className="space-y-6">
+                                    <div className="space-y-4">
                                         {sections.map((section, index) => (
-                                            <div key={index} className="flex items-start gap-4 p-4 border border-gray-100 bg-gray-50 rounded-lg relative group">
+                                            <div
+                                                key={index}
+                                                className="relative rounded-2xl border border-[#E8DED3] bg-[#FAF7F2] p-4"
+                                            >
                                                 <button
                                                     type="button"
                                                     onClick={() => removeSection(index)}
-                                                    className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors opacity-0 group-hover:opacity-100"
-                                                    title="Remove section"
+                                                    className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#7A6A62] hover:bg-red-50 hover:text-red-500"
                                                 >
-                                                    <X className="h-4 w-4" />
+                                                    <X size={15} />
                                                 </button>
-                                                <div className="w-full space-y-4">
+
+                                                <div className="space-y-4 pr-10">
                                                     <div>
-                                                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                                                            Section Title ({index + 1})
+                                                        <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                                                            Section Title {index + 1}
                                                         </Label>
+
                                                         <Input
                                                             value={section.title}
                                                             onChange={(e) => handleSectionChange(index, 'title', e.target.value)}
                                                             placeholder="e.g. Material & Fit"
-                                                            className="border-gray-300 bg-white"
+                                                            className="h-12 rounded-xl border-[#E2D5C5] bg-white focus:border-[#C9A06C]"
                                                         />
                                                     </div>
+
                                                     <div>
-                                                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                                                        <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
                                                             Section Content
                                                         </Label>
+
                                                         <Textarea
                                                             value={section.content}
                                                             onChange={(e) => handleSectionChange(index, 'content', e.target.value)}
-                                                            placeholder="Enter section description here..."
-                                                            rows={2}
-                                                            className="border-gray-300 resize-none bg-white"
+                                                            placeholder="Enter section description..."
+                                                            rows={3}
+                                                            className="rounded-xl border-[#E2D5C5] bg-white resize-none focus:border-[#C9A06C]"
                                                         />
                                                     </div>
                                                 </div>
                                             </div>
                                         ))}
-                                        {sections.length === 0 && (
-                                            <p className="text-sm text-gray-500 text-center py-4">No additional sections added.</p>
-                                        )}
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            {/* Product Images */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-6">Product Images</h3>
+                            <Card className="overflow-hidden rounded-3xl border-[#E8DED3] bg-white shadow-sm">
+                                <CardContent className="p-6 sm:p-8">
+                                    <div className="mb-7 flex items-center gap-3">
+                                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#C9A06C]/10 text-[#C9A06C]">
+                                            <ImagePlus size={22} />
+                                        </div>
 
-                                    {/* Image Grid */}
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-[#2A1416]">
+                                                Product Images
+                                            </h3>
+                                            <p className="text-sm text-[#7A6A62]">
+                                                Upload high-quality product photos.
+                                            </p>
+                                        </div>
+                                    </div>
+
                                     {formData.images.length > 0 && (
-                                        <div className="grid grid-cols-4 gap-4 mb-4">
+                                        <div className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
                                             {formData.images.map((img, index) => (
-                                                <div key={index} className="relative">
+                                                <div key={index} className="relative overflow-hidden rounded-2xl border border-[#E8DED3] bg-[#FAF7F2]">
                                                     <img
                                                         src={getImageUrl(img)}
                                                         alt={`Product ${index + 1}`}
-                                                        className="w-full h-24 object-cover rounded-lg border border-gray-200"
+                                                        className="h-32 w-full object-cover"
                                                     />
-                                                    <Button
+
+                                                    <button
                                                         type="button"
-                                                        size="sm"
-                                                        variant="destructive"
                                                         onClick={() => removeImage(index)}
-                                                        className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full bg-red-600 hover:bg-red-700"
+                                                        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-red-500 shadow"
                                                     >
-                                                        <X className="h-3 w-3" />
-                                                    </Button>
+                                                        <X size={14} />
+                                                    </button>
                                                 </div>
                                             ))}
                                         </div>
                                     )}
 
-                                    {/* Upload Area */}
-                                    <div>
-                                        <input
-                                            type="file"
-                                            id="imageUpload"
-                                            accept="image/*"
-                                            onChange={handleFileSelect}
-                                            className="hidden"
-                                        />
-                                        <label
-                                            htmlFor="imageUpload"
-                                            className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 transition-colors cursor-pointer block"
-                                        >
-                                            {uploadingImage ? (
-                                                <div className="flex flex-col items-center">
-                                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-                                                    <p className="text-sm text-gray-600">Uploading...</p>
+                                    <input
+                                        type="file"
+                                        id="imageUpload"
+                                        accept="image/*"
+                                        onChange={handleFileSelect}
+                                        className="hidden"
+                                    />
+
+                                    <label
+                                        htmlFor="imageUpload"
+                                        className="block cursor-pointer rounded-3xl border-2 border-dashed border-[#D9C8B3] bg-[#FCFAF7] p-10 text-center transition hover:border-[#C9A06C] hover:bg-[#FFF9F1]"
+                                    >
+                                        {uploadingImage ? (
+                                            <div className="flex flex-col items-center">
+                                                <div className="mb-4 h-12 w-12 animate-spin rounded-full border-2 border-[#E8DED3] border-t-[#C9A06C]" />
+                                                <p className="text-sm text-[#7A6A62]">Uploading...</p>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <Upload className="mx-auto mb-4 h-12 w-12 text-[#C9A06C]" />
+                                                <p className="mb-1 text-sm font-medium text-[#2A1416]">
+                                                    Drop images here or <span className="text-[#C9A06C]">Browse</span>
+                                                </p>
+                                                <p className="text-xs text-[#8A7B72]">
+                                                    JPG, PNG, GIF, WEBP supported. Max 5MB each.
+                                                </p>
+                                            </>
+                                        )}
+                                    </label>
+
+                                    {errors.images && <p className="mt-2 text-sm text-red-500">{errors.images}</p>}
+                                </CardContent>
+                            </Card>
+
+                            <Card className="overflow-hidden rounded-3xl border-[#E8DED3] bg-white shadow-sm">
+                                <CardContent className="p-6 sm:p-8">
+                                    <div className="mb-7 flex items-center gap-3">
+                                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#C9A06C]/10 text-[#C9A06C]">
+                                            <IndianRupee size={22} />
+                                        </div>
+
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-[#2A1416]">
+                                                Pricing & Stock
+                                            </h3>
+                                            <p className="text-sm text-[#7A6A62]">
+                                                Set price, discount and inventory.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+                                        {[
+                                            { label: 'MRP', name: 'mrp', placeholder: '0.00' },
+                                            { label: 'Offer Price', name: 'price', placeholder: '0.00', required: true },
+                                            { label: 'Discount (%)', name: 'discount', placeholder: '0' },
+                                            { label: 'Stock', name: 'stock', placeholder: '0' },
+                                        ].map((field) => (
+                                            <div key={field.name}>
+                                                <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                                                    {field.label} {field.required && <span className="text-red-500">*</span>}
+                                                </Label>
+
+                                                <div className="relative">
+                                                    {field.name !== 'discount' && field.name !== 'stock' && (
+                                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7A6A62]">
+                                                            ₹
+                                                        </span>
+                                                    )}
+
+                                                    <Input
+                                                        name={field.name}
+                                                        type="number"
+                                                        value={formData[field.name]}
+                                                        onChange={handleChange}
+                                                        placeholder={field.placeholder}
+                                                        className={`${field.name !== 'discount' && field.name !== 'stock' ? 'pl-8' : ''} h-12 rounded-xl border-[#E2D5C5] bg-[#FCFAF7] focus:border-[#C9A06C] ${errors[field.name] ? 'border-red-500' : ''}`}
+                                                    />
                                                 </div>
-                                            ) : (
-                                                <>
-                                                    <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                                                    <p className="text-sm text-gray-600 mb-1">
-                                                        Drag your images here, or <span className="text-blue-600 font-medium">Browse</span>
-                                                    </p>
-                                                    <p className="text-xs text-gray-400">Supports: JPG, PNG, GIF, WEBP (Max: 5MB each)</p>
-                                                </>
-                                            )}
-                                        </label>
-                                        {errors.images && <p className="text-sm text-red-500 mt-2">{errors.images}</p>}
+
+                                                {errors[field.name] && <p className="mt-1 text-sm text-red-500">{errors[field.name]}</p>}
+                                            </div>
+                                        ))}
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            {/* Pricing */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-6">Pricing</h3>
+                            <Card className="overflow-hidden rounded-3xl border-[#E8DED3] bg-white shadow-sm">
+                                <CardContent className="p-6 sm:p-8">
+                                    <h3 className="mb-6 text-lg font-semibold text-[#2A1416]">
+                                        Variants
+                                    </h3>
 
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                                         <div>
-                                            <Label htmlFor="mrp" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                MRP (Original Price)
+                                            <Label className="mb-3 block text-sm font-medium text-[#2A1416]">
+                                                Available Sizes
                                             </Label>
-                                            <div className="relative">
-                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                                                <Input
-                                                    id="mrp"
-                                                    name="mrp"
-                                                    type="number"
-                                                    value={formData.mrp}
-                                                    onChange={handleChange}
-                                                    placeholder="0.00"
-                                                    className="pl-8 border-gray-300"
-                                                />
-                                            </div>
-                                        </div>
 
-                                        <div>
-                                            <Label htmlFor="price" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                Offer Price <span className="text-red-500">*</span>
-                                            </Label>
-                                            <div className="relative">
-                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                                                <Input
-                                                    id="price"
-                                                    name="price"
-                                                    type="number"
-                                                    value={formData.price}
-                                                    onChange={handleChange}
-                                                    placeholder="0.00"
-                                                    className={`pl-8 border-gray-300 ${errors.price ? 'border-red-500' : ''}`}
-                                                />
-                                            </div>
-                                            {errors.price && <p className="text-sm text-red-500 mt-1">{errors.price}</p>}
-                                        </div>
-
-                                        <div>
-                                            <Label htmlFor="discount" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                Discount (%)
-                                            </Label>
-                                            <Input
-                                                id="discount"
-                                                name="discount"
-                                                type="number"
-                                                value={formData.discount}
-                                                onChange={handleChange}
-                                                placeholder="0"
-                                                className="border-gray-300"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <Label htmlFor="stock" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                Stock
-                                            </Label>
-                                            <Input
-                                                id="stock"
-                                                name="stock"
-                                                type="number"
-                                                value={formData.stock}
-                                                onChange={handleChange}
-                                                placeholder="0"
-                                                className="border-gray-300"
-                                            />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Variants */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-6">Variants</h3>
-
-                                    <div className="space-y-5">
-                                        <div>
-                                            <Label className="text-sm font-medium text-gray-700 mb-3 block">Available Sizes (Press Enter to add)</Label>
-                                            <div className="flex flex-wrap gap-2 mb-3">
-                                                {formData.availableSizes.map(size => (
-                                                    <span key={size} className="px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-md text-sm flex items-center gap-2">
+                                            <div className="mb-3 flex flex-wrap gap-2">
+                                                {formData.availableSizes.map((size) => (
+                                                    <span key={size} className="flex items-center gap-2 rounded-full bg-[#C9A06C]/10 px-3 py-1 text-sm font-medium text-[#9B743F]">
                                                         {size}
-                                                        <button type="button" onClick={() => toggleSize(size)} className="text-blue-400 hover:text-red-500 transition-colors">
-                                                            <X className="h-3 w-3" />
+                                                        <button type="button" onClick={() => toggleSize(size)}>
+                                                            <X size={13} />
                                                         </button>
                                                     </span>
                                                 ))}
                                             </div>
+
                                             <Input
                                                 type="text"
-                                                placeholder="e.g. XL, 42, Free Size..."
-                                                className="border-gray-300"
+                                                placeholder="Press Enter to add size"
+                                                className="h-12 rounded-xl border-[#E2D5C5] bg-[#FCFAF7] focus:border-[#C9A06C]"
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter') {
                                                         e.preventDefault();
                                                         const val = e.target.value.trim();
-                                                        if (val && !formData.availableSizes.includes(val)) toggleSize(val);
+
+                                                        if (val && !formData.availableSizes.includes(val)) {
+                                                            toggleSize(val);
+                                                        }
+
                                                         e.target.value = '';
                                                     }
                                                 }}
@@ -502,26 +545,34 @@ export default function CreateProduct() {
                                         </div>
 
                                         <div>
-                                            <Label className="text-sm font-medium text-gray-700 mb-3 block">Available Colors (Press Enter to add)</Label>
-                                            <div className="flex flex-wrap gap-2 mb-3">
-                                                {formData.availableColors.map(color => (
-                                                    <span key={color} className="px-3 py-1 bg-green-50 border border-green-200 text-green-700 rounded-md text-sm flex items-center gap-2">
+                                            <Label className="mb-3 block text-sm font-medium text-[#2A1416]">
+                                                Available Colors
+                                            </Label>
+
+                                            <div className="mb-3 flex flex-wrap gap-2">
+                                                {formData.availableColors.map((color) => (
+                                                    <span key={color} className="flex items-center gap-2 rounded-full bg-[#2A1416]/5 px-3 py-1 text-sm font-medium text-[#2A1416]">
                                                         {color}
-                                                        <button type="button" onClick={() => toggleColor(color)} className="text-green-400 hover:text-red-500 transition-colors">
-                                                            <X className="h-3 w-3" />
+                                                        <button type="button" onClick={() => toggleColor(color)}>
+                                                            <X size={13} />
                                                         </button>
                                                     </span>
                                                 ))}
                                             </div>
+
                                             <Input
                                                 type="text"
-                                                placeholder="e.g. Navy Blue, Peach..."
-                                                className="border-gray-300"
+                                                placeholder="Press Enter to add color"
+                                                className="h-12 rounded-xl border-[#E2D5C5] bg-[#FCFAF7] focus:border-[#C9A06C]"
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter') {
                                                         e.preventDefault();
                                                         const val = e.target.value.trim();
-                                                        if (val && !formData.availableColors.includes(val)) toggleColor(val);
+
+                                                        if (val && !formData.availableColors.includes(val)) {
+                                                            toggleColor(val);
+                                                        }
+
                                                         e.target.value = '';
                                                     }
                                                 }}
@@ -532,99 +583,78 @@ export default function CreateProduct() {
                             </Card>
                         </div>
 
-                        {/* Right Column */}
                         <div className="space-y-6">
-                            {/* Category */}
-                            <Card className="border-gray-200 shadow-sm">
+                            <Card className="rounded-3xl border-[#E8DED3] bg-white shadow-sm lg:sticky lg:top-28">
                                 <CardContent className="p-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-6">Category</h3>
+                                    <h3 className="mb-5 text-lg font-semibold text-[#2A1416]">
+                                        Product Settings
+                                    </h3>
 
-                                    <div>
-                                        <Label htmlFor="categoryId" className="text-sm font-medium text-gray-700 mb-2 block">
-                                            Select category <span className="text-red-500">*</span>
-                                        </Label>
-                                        <select
-                                            id="categoryId"
-                                            name="categoryId"
-                                            value={formData.categoryId}
-                                            onChange={handleChange}
-                                            className={`w-full px-3 py-2 border rounded-md text-sm ${errors.categoryId ? 'border-red-500' : 'border-gray-300'
-                                                }`}
-                                        >
-                                            <option value="">Select</option>
-                                            {categories.map((cat) => (
-                                                <option key={cat._id} value={cat._id}>
-                                                    {cat.name}
-                                                </option>
+                                    <div className="space-y-5">
+                                        <div>
+                                            <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                                                Category <span className="text-red-500">*</span>
+                                            </Label>
+
+                                            <select
+                                                name="categoryId"
+                                                value={formData.categoryId}
+                                                onChange={handleChange}
+                                                className={`h-12 w-full rounded-xl border bg-[#FCFAF7] px-3 text-sm outline-none focus:border-[#C9A06C] ${errors.categoryId ? 'border-red-500' : 'border-[#E2D5C5]'}`}
+                                            >
+                                                <option value="">Select category</option>
+
+                                                {categories.map((cat) => (
+                                                    <option key={cat._id} value={cat._id}>
+                                                        {cat.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+
+                                            {errors.categoryId && <p className="mt-1 text-sm text-red-500">{errors.categoryId}</p>}
+                                        </div>
+
+                                        <div className="space-y-3 rounded-2xl bg-[#FAF7F2] p-4">
+                                            {[
+                                                { id: 'isActive', label: 'Active on website' },
+                                                { id: 'isTrending', label: 'Mark as Trending' },
+                                                { id: 'isCODAvailable', label: 'Cash on Delivery' },
+                                            ].map((item) => (
+                                                <label
+                                                    key={item.id}
+                                                    htmlFor={item.id}
+                                                    className="flex cursor-pointer items-center justify-between rounded-xl bg-white px-4 py-3"
+                                                >
+                                                    <span className="text-sm font-medium text-[#2A1416]">
+                                                        {item.label}
+                                                    </span>
+
+                                                    <input
+                                                        id={item.id}
+                                                        name={item.id}
+                                                        type="checkbox"
+                                                        checked={formData[item.id]}
+                                                        onChange={handleChange}
+                                                        className="h-4 w-4 accent-[#C9A06C]"
+                                                    />
+                                                </label>
                                             ))}
-                                        </select>
-                                        {errors.categoryId && <p className="text-sm text-red-500 mt-1">{errors.categoryId}</p>}
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Status & Visibility */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-6">Status & Visibility</h3>
-
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <input
-                                                id="isActive"
-                                                name="isActive"
-                                                type="checkbox"
-                                                checked={formData.isActive}
-                                                onChange={handleChange}
-                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                            />
-                                            <Label htmlFor="isActive" className="text-sm font-medium text-gray-700 cursor-pointer">
-                                                Active (Show on website)
-                                            </Label>
                                         </div>
 
-                                        <div className="flex items-center gap-3">
-                                            <input
-                                                id="isTrending"
-                                                name="isTrending"
-                                                type="checkbox"
-                                                checked={formData.isTrending}
-                                                onChange={handleChange}
-                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                            />
-                                            <Label htmlFor="isTrending" className="text-sm font-medium text-gray-700 cursor-pointer">
-                                                Mark as Trending (Appears on Homepage)
-                                            </Label>
-                                        </div>
+                                        <div className="rounded-2xl border border-[#E8DED3] bg-[#FFF9F1] p-4">
+                                            <h4 className="mb-3 text-sm font-semibold text-[#2A1416]">
+                                                Product Tips
+                                            </h4>
 
-                                        <div className="flex items-center gap-3">
-                                            <input
-                                                id="isCODAvailable"
-                                                name="isCODAvailable"
-                                                type="checkbox"
-                                                checked={formData.isCODAvailable}
-                                                onChange={handleChange}
-                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                            />
-                                            <Label htmlFor="isCODAvailable" className="text-sm font-medium text-gray-700 cursor-pointer">
-                                                Cash on Delivery Available
-                                            </Label>
+                                            <ul className="space-y-2 text-xs leading-5 text-[#7A6A62]">
+                                                <li>• Add multiple clear images</li>
+                                                <li>• Use proper product title</li>
+                                                <li>• Add detailed description</li>
+                                                <li>• Select correct category</li>
+                                                <li>• Add size and color variants</li>
+                                            </ul>
                                         </div>
                                     </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Tips */}
-                            <Card className="border-gray-200 shadow-sm bg-blue-50">
-                                <CardContent className="p-6">
-                                    <h3 className="text-sm font-semibold text-gray-900 mb-3">Product Tips</h3>
-                                    <ul className="text-xs text-gray-600 space-y-2">
-                                        <li>• Add multiple images for better visibility</li>
-                                        <li>• Write detailed descriptions</li>
-                                        <li>• Select appropriate category</li>
-                                        <li>• Add size and color variants</li>
-                                        <li>• Set competitive pricing</li>
-                                    </ul>
                                 </CardContent>
                             </Card>
                         </div>
@@ -632,13 +662,12 @@ export default function CreateProduct() {
                 </form>
             </div>
 
-            {/* Image Cropper */}
             <ImageCropper
                 open={cropperOpen}
                 onClose={() => setCropperOpen(false)}
                 imageSrc={selectedImage}
                 onCropComplete={handleCropComplete}
-                aspectRatio={3 / 4} // Vertical crop for fashion products
+                aspectRatio={3 / 4}
                 targetWidth={900}
                 targetHeight={1200}
                 title="Crop Product Image"

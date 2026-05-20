@@ -62,7 +62,7 @@ export default function OfferList() {
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
             <div className="bg-white border-b border-gray-200 px-8 py-6">
-                <div className="flex items-center justify-between max-w-7xl mx-auto">
+                <div className="flex items-center justify-between max-w-8xl mx-auto">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">Offers & Coupons</h1>
                         <p className="text-sm text-gray-500 mt-1">
@@ -80,7 +80,7 @@ export default function OfferList() {
             </div>
 
             {/* Content */}
-            <div className="max-w-7xl mx-auto px-8 py-8">
+            <div className="max-w-8xl mx-auto px-8 py-8">
                 <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
                     {offers.length === 0 ? (
                         <div className="text-center py-16">

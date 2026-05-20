@@ -243,493 +243,324 @@ export default function EditProduct() {
         );
     }
 
-    return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <div className="bg-white border-b border-gray-200 px-8 py-4">
-                <div className="flex items-center justify-between max-w-7xl mx-auto">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Edit product</h1>
-                        <p className="text-sm text-gray-500 mt-1">Update product information</p>
-                    </div>
-                    <div className="flex gap-3">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setDeleteDialog(true)}
-                            className="border-red-300 text-red-600 hover:bg-red-50"
-                        >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => navigate('/products')}
-                            className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                        >
-                            Discard
-                        </Button>
-                        <Button
-                            onClick={handleSubmit}
-                            disabled={updateMutation.isLoading}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
-                        >
-                            {updateMutation.isLoading ? 'Saving...' : 'Save changes'}
-                        </Button>
-                    </div>
-                </div>
-            </div>
+return (
+  <div className="min-h-screen bg-[#F8F6F2]">
+    <div className="sticky top-0 z-30 border-b border-[#E8DED3] bg-white/90 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-[1500px] flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+        <div>
+          <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-[#C9A06C]/10 px-3 py-1 text-xs font-semibold text-[#9B743F]">
+            Edit Product
+          </div>
 
-            {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-8 py-8">
-                <form onSubmit={handleSubmit}>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        {/* Left Column */}
-                        <div className="lg:col-span-2 space-y-6">
-                            {/* Basic Information */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-6">Basic Information</h3>
+          <h1 className="text-2xl font-bold text-[#2A1416] sm:text-3xl">
+            Update Product
+          </h1>
 
-                                    <div className="space-y-5">
-                                        <div>
-                                            <Label htmlFor="sku" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                SKU (Stock Keeping Unit) <span className="text-red-500">*</span>
-                                            </Label>
-                                            <Input
-                                                id="sku"
-                                                name="sku"
-                                                value={formData.sku}
-                                                onChange={handleChange}
-                                                placeholder="e.g. LUG-SAR-001"
-                                                className={`border-gray-300 ${errors.sku ? 'border-red-500' : ''}`}
-                                            />
-                                            {errors.sku && <p className="text-sm text-red-500 mt-1">{errors.sku}</p>}
-                                        </div>
-
-                                        <div>
-                                            <Label htmlFor="name" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                Product name <span className="text-red-500">*</span>
-                                            </Label>
-                                            <Input
-                                                id="name"
-                                                name="name"
-                                                value={formData.name}
-                                                onChange={handleChange}
-                                                className={`border-gray-300 ${errors.name ? 'border-red-500' : ''}`}
-                                            />
-                                            {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
-                                        </div>
-
-                                        <div>
-                                            <Label htmlFor="description" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                Description
-                                            </Label>
-                                            <Textarea
-                                                id="description"
-                                                name="description"
-                                                value={formData.description}
-                                                onChange={handleChange}
-                                                rows={4}
-                                                className="border-gray-300 resize-none"
-                                            />
-                                        </div>
-
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Additional Information Sections (Dynamic) */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <div className="flex justify-between items-center mb-6">
-                                        <h3 className="text-base font-semibold text-gray-900">Additional Information Sections</h3>
-                                        <Button type="button" onClick={addSection} variant="outline" size="sm" className="bg-gray-50 text-gray-700 hover:bg-gray-100">
-                                            + Add Section
-                                        </Button>
-                                    </div>
-
-                                    <div className="space-y-6">
-                                        {sections.map((section, index) => (
-                                            <div key={index} className="flex items-start gap-4 p-4 border border-gray-100 bg-gray-50 rounded-lg relative group">
-                                                <button
-                                                    type="button"
-                                                    onClick={() => removeSection(index)}
-                                                    className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors opacity-0 group-hover:opacity-100"
-                                                    title="Remove section"
-                                                >
-                                                    <X className="h-4 w-4" />
-                                                </button>
-                                                <div className="w-full space-y-4">
-                                                    <div>
-                                                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                                                            Section Title ({index + 1})
-                                                        </Label>
-                                                        <Input
-                                                            value={section.title}
-                                                            onChange={(e) => handleSectionChange(index, 'title', e.target.value)}
-                                                            placeholder="e.g. Material & Fit"
-                                                            className="border-gray-300 bg-white"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                                                            Section Content
-                                                        </Label>
-                                                        <Textarea
-                                                            value={section.content}
-                                                            onChange={(e) => handleSectionChange(index, 'content', e.target.value)}
-                                                            placeholder="Enter section description here..."
-                                                            rows={2}
-                                                            className="border-gray-300 resize-none bg-white"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                        {sections.length === 0 && (
-                                            <p className="text-sm text-gray-500 text-center py-4">No additional sections added.</p>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Product Images */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-6">Product Images</h3>
-
-                                    {formData.images.length > 0 && (
-                                        <div className="grid grid-cols-4 gap-4 mb-4">
-                                            {formData.images.map((img, index) => (
-                                                <div key={index} className="relative">
-                                                    <img
-                                                        src={getImageUrl(img)}
-                                                        alt={`Product ${index + 1}`}
-                                                        className="w-full h-24 object-cover rounded-lg border border-gray-200"
-                                                    />
-                                                    <Button
-                                                        type="button"
-                                                        size="sm"
-                                                        variant="destructive"
-                                                        onClick={() => removeImage(index)}
-                                                        className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full bg-red-600 hover:bg-red-700"
-                                                    >
-                                                        <X className="h-3 w-3" />
-                                                    </Button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    <div>
-                                        <input
-                                            type="file"
-                                            id="imageUpload"
-                                            accept="image/*"
-                                            onChange={handleFileSelect}
-                                            className="hidden"
-                                        />
-                                        <label
-                                            htmlFor="imageUpload"
-                                            className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 transition-colors cursor-pointer block"
-                                        >
-                                            {uploadingImage ? (
-                                                <div className="flex flex-col items-center">
-                                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-                                                    <p className="text-sm text-gray-600">Uploading...</p>
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                                                    <p className="text-sm text-gray-600 mb-1">
-                                                        Add more images, or <span className="text-blue-600 font-medium">Browse</span>
-                                                    </p>
-                                                    <p className="text-xs text-gray-400">Supports: JPG, PNG, GIF, WEBP (Max: 5MB each)</p>
-                                                </>
-                                            )}
-                                        </label>
-                                        {errors.images && <p className="text-sm text-red-500 mt-2">{errors.images}</p>}
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Pricing */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-6">Pricing</h3>
-
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-                                        <div>
-                                            <Label htmlFor="mrp" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                MRP (Original Price)
-                                            </Label>
-                                            <div className="relative">
-                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                                                <Input
-                                                    id="mrp"
-                                                    name="mrp"
-                                                    type="number"
-                                                    value={formData.mrp}
-                                                    onChange={handleChange}
-                                                    placeholder="0.00"
-                                                    className="pl-8 border-gray-300"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <Label htmlFor="price" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                Offer Price <span className="text-red-500">*</span>
-                                            </Label>
-                                            <div className="relative">
-                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-                                                <Input
-                                                    id="price"
-                                                    name="price"
-                                                    type="number"
-                                                    value={formData.price}
-                                                    onChange={handleChange}
-                                                    className={`pl-8 border-gray-300 ${errors.price ? 'border-red-500' : ''}`}
-                                                />
-                                            </div>
-                                            {errors.price && <p className="text-sm text-red-500 mt-1">{errors.price}</p>}
-                                        </div>
-
-                                        <div>
-                                            <Label htmlFor="discount" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                Discount (%)
-                                            </Label>
-                                            <Input
-                                                id="discount"
-                                                name="discount"
-                                                type="number"
-                                                value={formData.discount}
-                                                onChange={handleChange}
-                                                className="border-gray-300"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <Label htmlFor="stock" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                Stock
-                                            </Label>
-                                            <Input
-                                                id="stock"
-                                                name="stock"
-                                                type="number"
-                                                value={formData.stock}
-                                                onChange={handleChange}
-                                                className="border-gray-300"
-                                            />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Variants */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-6">Variants</h3>
-
-                                    <div className="space-y-5">
-                                        <div>
-                                            <Label className="text-sm font-medium text-gray-700 mb-3 block">Available Sizes (Press Enter to add)</Label>
-                                            <div className="flex flex-wrap gap-2 mb-3">
-                                                {formData.availableSizes.map(size => (
-                                                    <span key={size} className="px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-md text-sm flex items-center gap-2">
-                                                        {size}
-                                                        <button type="button" onClick={() => toggleSize(size)} className="text-blue-400 hover:text-red-500 transition-colors">
-                                                            <X className="h-3 w-3" />
-                                                        </button>
-                                                    </span>
-                                                ))}
-                                            </div>
-                                            <Input
-                                                type="text"
-                                                placeholder="e.g. XL, 42, Free Size..."
-                                                className="border-gray-300"
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        e.preventDefault();
-                                                        const val = e.target.value.trim();
-                                                        if (val && !formData.availableSizes.includes(val)) toggleSize(val);
-                                                        e.target.value = '';
-                                                    }
-                                                }}
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <Label className="text-sm font-medium text-gray-700 mb-3 block">Available Colors (Press Enter to add)</Label>
-                                            <div className="flex flex-wrap gap-2 mb-3">
-                                                {formData.availableColors.map(color => (
-                                                    <span key={color} className="px-3 py-1 bg-green-50 border border-green-200 text-green-700 rounded-md text-sm flex items-center gap-2">
-                                                        {color}
-                                                        <button type="button" onClick={() => toggleColor(color)} className="text-green-400 hover:text-red-500 transition-colors">
-                                                            <X className="h-3 w-3" />
-                                                        </button>
-                                                    </span>
-                                                ))}
-                                            </div>
-                                            <Input
-                                                type="text"
-                                                placeholder="e.g. Navy Blue, Peach..."
-                                                className="border-gray-300"
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        e.preventDefault();
-                                                        const val = e.target.value.trim();
-                                                        if (val && !formData.availableColors.includes(val)) toggleColor(val);
-                                                        e.target.value = '';
-                                                    }
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-
-                        {/* Right Column */}
-                        <div className="space-y-6">
-                            {/* Category */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-6">Category</h3>
-
-                                    <div>
-                                        <Label htmlFor="categoryId" className="text-sm font-medium text-gray-700 mb-2 block">
-                                            Select category <span className="text-red-500">*</span>
-                                        </Label>
-                                        <select
-                                            id="categoryId"
-                                            name="categoryId"
-                                            value={formData.categoryId}
-                                            onChange={handleChange}
-                                            className={`w-full px-3 py-2 border rounded-md text-sm ${errors.categoryId ? 'border-red-500' : 'border-gray-300'
-                                                }`}
-                                        >
-                                            <option value="">Select</option>
-                                            {categories.map((cat) => (
-                                                <option key={cat._id} value={cat._id}>
-                                                    {cat.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        {errors.categoryId && <p className="text-sm text-red-500 mt-1">{errors.categoryId}</p>}
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Status & Visibility */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-6">Status & Visibility</h3>
-
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <input
-                                                id="isActive"
-                                                name="isActive"
-                                                type="checkbox"
-                                                checked={formData.isActive}
-                                                onChange={handleChange}
-                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                            />
-                                            <Label htmlFor="isActive" className="text-sm font-medium text-gray-700 cursor-pointer">
-                                                Active (Show on website)
-                                            </Label>
-                                        </div>
-
-                                        <div className="flex items-center gap-3">
-                                            <input
-                                                id="isTrending"
-                                                name="isTrending"
-                                                type="checkbox"
-                                                checked={formData.isTrending}
-                                                onChange={handleChange}
-                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                            />
-                                            <Label htmlFor="isTrending" className="text-sm font-medium text-gray-700 cursor-pointer">
-                                                Mark as Trending (Appears on Homepage)
-                                            </Label>
-                                        </div>
-
-                                        <div className="flex items-center gap-3">
-                                            <input
-                                                id="isCODAvailable"
-                                                name="isCODAvailable"
-                                                type="checkbox"
-                                                checked={formData.isCODAvailable}
-                                                onChange={handleChange}
-                                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                            />
-                                            <Label htmlFor="isCODAvailable" className="text-sm font-medium text-gray-700 cursor-pointer">
-                                                Cash on Delivery Available
-                                            </Label>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Info */}
-                            <Card className="border-gray-200 shadow-sm bg-blue-50">
-                                <CardContent className="p-6">
-                                    <h3 className="text-sm font-semibold text-gray-900 mb-3">Update Tips</h3>
-                                    <ul className="text-xs text-gray-600 space-y-2">
-                                        <li>• Changes save immediately</li>
-                                        <li>• Add/remove product images</li>
-                                        <li>• Update category and variants</li>
-                                        <li>• Stock updates affect availability</li>
-                                    </ul>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            {/* Delete Confirmation */}
-            <Dialog open={deleteDialog} onOpenChange={setDeleteDialog}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Delete Product</DialogTitle>
-                        <DialogDescription>
-                            Are you sure you want to delete "{product?.name}"? This action cannot be undone.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button
-                            variant="outline"
-                            onClick={() => setDeleteDialog(false)}
-                            className="border-gray-300"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={handleDelete}
-                            disabled={deleteMutation.isLoading}
-                            className="bg-red-600 hover:bg-red-700 text-white"
-                        >
-                            {deleteMutation.isLoading ? 'Deleting...' : 'Delete'}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-            {/* Image Cropper */}
-            <ImageCropper
-                open={cropperOpen}
-                onClose={() => setCropperOpen(false)}
-                imageSrc={selectedImage}
-                onCropComplete={handleCropComplete}
-                aspectRatio={3 / 4}
-                targetWidth={900}
-                targetHeight={1200}
-                title="Crop Product Image"
-            />
+          <p className="mt-1 text-sm text-[#7A6A62]">
+            Update product information, pricing, images and visibility.
+          </p>
         </div>
-    );
+
+        <div className="flex flex-wrap gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setDeleteDialog(true)}
+            className="rounded-xl border-red-200 bg-white text-red-600 hover:bg-red-50"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => navigate('/products')}
+            className="rounded-xl border-[#E2D5C5] bg-white text-[#2A1416] hover:bg-[#FAF7F2]"
+          >
+            Discard
+          </Button>
+
+          <Button
+            onClick={handleSubmit}
+            disabled={updateMutation.isLoading}
+            className="rounded-xl bg-[#C9A06C] px-6 text-white hover:bg-[#B88D57]"
+          >
+            {updateMutation.isLoading ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <div className="mx-auto max-w-[1500px] px-4 py-8 sm:px-6 lg:px-8">
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="space-y-6 lg:col-span-2">
+            <Card className="rounded-3xl border-[#E8DED3] bg-white shadow-sm">
+              <CardContent className="p-6 sm:p-8">
+                <h3 className="mb-6 text-lg font-semibold text-[#2A1416]">
+                  Basic Information
+                </h3>
+
+                <div className="space-y-5">
+                  <div>
+                    <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                      SKU <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      name="sku"
+                      value={formData.sku}
+                      onChange={handleChange}
+                      className={`h-12 rounded-xl border-[#E2D5C5] bg-[#FCFAF7] focus:border-[#C9A06C] ${errors.sku ? 'border-red-500' : ''}`}
+                    />
+                    {errors.sku && <p className="mt-1 text-sm text-red-500">{errors.sku}</p>}
+                  </div>
+
+                  <div>
+                    <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                      Product Name <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className={`h-12 rounded-xl border-[#E2D5C5] bg-[#FCFAF7] focus:border-[#C9A06C] ${errors.name ? 'border-red-500' : ''}`}
+                    />
+                    {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+                  </div>
+
+                  <div>
+                    <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                      Description
+                    </Label>
+                    <Textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleChange}
+                      rows={5}
+                      className="resize-none rounded-xl border-[#E2D5C5] bg-[#FCFAF7] focus:border-[#C9A06C]"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-3xl border-[#E8DED3] bg-white shadow-sm">
+              <CardContent className="p-6 sm:p-8">
+                <div className="mb-6 flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-[#2A1416]">
+                    Additional Sections
+                  </h3>
+
+                  <Button
+                    type="button"
+                    onClick={addSection}
+                    variant="outline"
+                    size="sm"
+                    className="rounded-xl border-[#E2D5C5] bg-[#FAF7F2] hover:bg-[#C9A06C] hover:text-white"
+                  >
+                    + Add
+                  </Button>
+                </div>
+
+                <div className="space-y-4">
+                  {sections.map((section, index) => (
+                    <div
+                      key={index}
+                      className="relative rounded-2xl border border-[#E8DED3] bg-[#FAF7F2] p-4"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => removeSection(index)}
+                        className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#7A6A62] hover:bg-red-50 hover:text-red-500"
+                      >
+                        <X size={15} />
+                      </button>
+
+                      <div className="space-y-4 pr-10">
+                        <Input
+                          value={section.title}
+                          onChange={(e) => handleSectionChange(index, 'title', e.target.value)}
+                          placeholder="Section title"
+                          className="h-12 rounded-xl border-[#E2D5C5] bg-white focus:border-[#C9A06C]"
+                        />
+
+                        <Textarea
+                          value={section.content}
+                          onChange={(e) => handleSectionChange(index, 'content', e.target.value)}
+                          placeholder="Section content"
+                          rows={3}
+                          className="resize-none rounded-xl border-[#E2D5C5] bg-white focus:border-[#C9A06C]"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-3xl border-[#E8DED3] bg-white shadow-sm">
+              <CardContent className="p-6 sm:p-8">
+                <h3 className="mb-6 text-lg font-semibold text-[#2A1416]">
+                  Product Images
+                </h3>
+
+                {formData.images.length > 0 && (
+                  <div className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-4">
+                    {formData.images.map((img, index) => (
+                      <div
+                        key={index}
+                        className="relative overflow-hidden rounded-2xl border border-[#E8DED3] bg-[#FAF7F2]"
+                      >
+                        <img
+                          src={getImageUrl(img)}
+                          alt={`Product ${index + 1}`}
+                          className="h-32 w-full object-cover"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-red-500 shadow"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <input
+                  type="file"
+                  id="imageUpload"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+
+                <label
+                  htmlFor="imageUpload"
+                  className="block cursor-pointer rounded-3xl border-2 border-dashed border-[#D9C8B3] bg-[#FCFAF7] p-10 text-center transition hover:border-[#C9A06C] hover:bg-[#FFF9F1]"
+                >
+                  {uploadingImage ? (
+                    <p className="text-sm text-[#7A6A62]">Uploading...</p>
+                  ) : (
+                    <>
+                      <Upload className="mx-auto mb-4 h-12 w-12 text-[#C9A06C]" />
+                      <p className="text-sm font-medium text-[#2A1416]">
+                        Add more images or <span className="text-[#C9A06C]">Browse</span>
+                      </p>
+                      <p className="mt-1 text-xs text-[#8A7B72]">
+                        JPG, PNG, GIF, WEBP supported. Max 5MB.
+                      </p>
+                    </>
+                  )}
+                </label>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="space-y-6">
+            <Card className="rounded-3xl border-[#E8DED3] bg-white shadow-sm lg:sticky lg:top-28">
+              <CardContent className="p-6">
+                <h3 className="mb-5 text-lg font-semibold text-[#2A1416]">
+                  Product Settings
+                </h3>
+
+                <div className="space-y-5">
+                  <div>
+                    <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                      Category <span className="text-red-500">*</span>
+                    </Label>
+
+                    <select
+                      name="categoryId"
+                      value={formData.categoryId}
+                      onChange={handleChange}
+                      className={`h-12 w-full rounded-xl border bg-[#FCFAF7] px-3 text-sm outline-none focus:border-[#C9A06C] ${errors.categoryId ? 'border-red-500' : 'border-[#E2D5C5]'}`}
+                    >
+                      <option value="">Select category</option>
+                      {categories.map((cat) => (
+                        <option key={cat._id} value={cat._id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="space-y-3 rounded-2xl bg-[#FAF7F2] p-4">
+                    {[
+                      { id: 'isActive', label: 'Active on website' },
+                      { id: 'isTrending', label: 'Mark as Trending' },
+                      { id: 'isCODAvailable', label: 'Cash on Delivery' },
+                    ].map((item) => (
+                      <label
+                        key={item.id}
+                        htmlFor={item.id}
+                        className="flex cursor-pointer items-center justify-between rounded-xl bg-white px-4 py-3"
+                      >
+                        <span className="text-sm font-medium text-[#2A1416]">
+                          {item.label}
+                        </span>
+
+                        <input
+                          id={item.id}
+                          name={item.id}
+                          type="checkbox"
+                          checked={formData[item.id]}
+                          onChange={handleChange}
+                          className="h-4 w-4 accent-[#C9A06C]"
+                        />
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <Dialog open={deleteDialog} onOpenChange={setDeleteDialog}>
+      <DialogContent className="rounded-3xl">
+        <DialogHeader>
+          <DialogTitle>Delete Product</DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete "{product?.name}"? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => setDeleteDialog(false)}
+            className="rounded-xl border-[#E2D5C5]"
+          >
+            Cancel
+          </Button>
+
+          <Button
+            onClick={handleDelete}
+            disabled={deleteMutation.isLoading}
+            className="rounded-xl bg-red-600 text-white hover:bg-red-700"
+          >
+            {deleteMutation.isLoading ? 'Deleting...' : 'Delete'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    <ImageCropper
+      open={cropperOpen}
+      onClose={() => setCropperOpen(false)}
+      imageSrc={selectedImage}
+      onCropComplete={handleCropComplete}
+      aspectRatio={3 / 4}
+      targetWidth={900}
+      targetHeight={1200}
+      title="Crop Product Image"
+    />
+  </div>
+);
 }

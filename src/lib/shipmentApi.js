@@ -1,4 +1,4 @@
-import api from './axios';
+import api from '@/lib/api';
 
 export const shipOrderWithShiprocket = async (orderId) => {
   const { data } = await api.put(`/shipping/${orderId}/ship`);
