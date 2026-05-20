@@ -1,317 +1,390 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useCreateOffer } from '@/hooks/useOffers';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCreateOffer } from "@/hooks/useOffers";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function CreateOffer() {
-    const navigate = useNavigate();
-    const createMutation = useCreateOffer();
+  const navigate = useNavigate();
+  const createMutation = useCreateOffer();
 
-    const [formData, setFormData] = useState({
-        title: '',
-        code: '',
-        discountType: 'percentage',
-        discountValue: '',
-        minOrderAmount: '',
-        maxDiscount: '',
-        endDate: '',
-        usageLimit: '',
-    });
+  const [formData, setFormData] = useState({
+    title: "",
+    code: "",
+    discountType: "percentage",
+    discountValue: "",
+    minOrderAmount: "",
+    maxDiscount: "",
+    endDate: "",
+    usageLimit: "",
+  });
 
-    const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({});
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value,
-        }));
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
-        }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.title.trim()) newErrors.title = "Title is required";
+    if (!formData.code.trim()) newErrors.code = "Coupon code is required";
+    if (!formData.discountValue)
+      newErrors.discountValue = "Discount value is required";
+    if (!formData.endDate) newErrors.endDate = "End date is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const offerData = {
+      ...formData,
+      code: formData.code.toUpperCase(),
+      discountValue: parseFloat(formData.discountValue),
+      minOrderAmount: formData.minOrderAmount
+        ? parseFloat(formData.minOrderAmount)
+        : 0,
+      maxDiscount: formData.maxDiscount
+        ? parseFloat(formData.maxDiscount)
+        : undefined,
+      usageLimit: formData.usageLimit
+        ? parseInt(formData.usageLimit)
+        : undefined,
     };
 
-    const validate = () => {
-        const newErrors = {};
-        if (!formData.title.trim()) newErrors.title = 'Title is required';
-        if (!formData.code.trim()) newErrors.code = 'Coupon code is required';
-        if (!formData.discountValue) newErrors.discountValue = 'Discount value is required';
-        if (!formData.endDate) newErrors.endDate = 'End date is required';
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    try {
+      await createMutation.mutateAsync(offerData);
+      navigate("/offers");
+    } catch (error) {
+      console.error("Failed to create offer:", error);
+    }
+  };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!validate()) return;
-
-        const offerData = {
-            ...formData,
-            code: formData.code.toUpperCase(),
-            discountValue: parseFloat(formData.discountValue),
-            minOrderAmount: formData.minOrderAmount ? parseFloat(formData.minOrderAmount) : 0,
-            maxDiscount: formData.maxDiscount ? parseFloat(formData.maxDiscount) : undefined,
-            usageLimit: formData.usageLimit ? parseInt(formData.usageLimit) : undefined,
-        };
-
-        try {
-            await createMutation.mutateAsync(offerData);
-            navigate('/offers');
-        } catch (error) {
-            console.error('Failed to create offer:', error);
-        }
-    };
-
-    return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <div className="bg-white border-b border-gray-200 px-8 py-4">
-                <div className="flex items-center justify-between max-w-8xl mx-auto">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Add an offer</h1>
-                    </div>
-                    <div className="flex gap-3">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => navigate('/offers')}
-                            className="border-gray-300 text-gray-700 hover:bg-gray-50"
-                        >
-                            Discard
-                        </Button>
-                        <Button
-                            onClick={handleSubmit}
-                            disabled={createMutation.isLoading}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
-                        >
-                            {createMutation.isLoading ? 'Creating...' : 'Add offer'}
-                        </Button>
-                    </div>
-                </div>
+  return (
+    <div className="min-h-screen bg-[#F8F6F2]">
+      <div className="top-0 z-30 border-b border-[#E8DED3] bg-white/90 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-[1500px] flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+          <div>
+            <div className="mb-2 inline-flex rounded-full bg-[#C9A06C]/10 px-3 py-1 text-xs font-semibold text-[#9B743F]">
+              Offer Management
             </div>
 
-            {/* Main Content */}
-            <div className="max-w-8xl mx-auto px-8 py-8">
-                <form onSubmit={handleSubmit}>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        {/* Left Column */}
-                        <div className="lg:col-span-2 space-y-6">
-                            {/* Basic Information */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-6">Basic Information</h3>
+            <h1 className="text-2xl font-bold text-[#2A1416] sm:text-3xl">
+              Add New Offer
+            </h1>
 
-                                    <div className="space-y-5">
-                                        <div>
-                                            <Label htmlFor="title" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                Offer title <span className="text-red-500">*</span>
-                                            </Label>
-                                            <Input
-                                                id="title"
-                                                name="title"
-                                                value={formData.title}
-                                                onChange={handleChange}
-                                                placeholder="e.g., Summer Sale 2024"
-                                                className={`border-gray-300 ${errors.title ? 'border-red-500' : ''}`}
-                                            />
-                                            {errors.title && <p className="text-sm text-red-500 mt-1">{errors.title}</p>}
-                                        </div>
+            <p className="mt-1 text-sm text-[#7A6A62]">
+              Create coupon codes, discounts and validity rules.
+            </p>
+          </div>
 
-                                        <div>
-                                            <Label htmlFor="code" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                Coupon code <span className="text-red-500">*</span>
-                                            </Label>
-                                            <Input
-                                                id="code"
-                                                name="code"
-                                                value={formData.code}
-                                                onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value.toUpperCase() }))}
-                                                placeholder="e.g., SUMMER50"
-                                                className={`border-gray-300 font-mono ${errors.code ? 'border-red-500' : ''}`}
-                                            />
-                                            {errors.code && <p className="text-sm text-red-500 mt-1">{errors.code}</p>}
-                                            <p className="text-xs text-gray-500 mt-2">Must be unique, will be auto-converted to uppercase</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+          <div className="flex gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate("/offers")}
+              className="rounded-xl border-[#E2D5C5] bg-white text-[#2A1416] hover:bg-[#FAF7F2]"
+            >
+              Discard
+            </Button>
 
-                            {/* Discount Details */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-6">Discount Details</h3>
-
-                                    <div className="space-y-5">
-                                        <div>
-                                            <Label htmlFor="discountType" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                Discount type <span className="text-red-500">*</span>
-                                            </Label>
-                                            <select
-                                                id="discountType"
-                                                name="discountType"
-                                                value={formData.discountType}
-                                                onChange={handleChange}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                                            >
-                                                <option value="percentage">Percentage (%)</option>
-                                                <option value="fixed">Fixed Amount (₹)</option>
-                                            </select>
-                                        </div>
-
-                                        <div className="grid grid-cols-2 gap-5">
-                                            <div>
-                                                <Label htmlFor="discountValue" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                    Discount value <span className="text-red-500">*</span>
-                                                </Label>
-                                                <Input
-                                                    id="discountValue"
-                                                    name="discountValue"
-                                                    type="number"
-                                                    value={formData.discountValue}
-                                                    onChange={handleChange}
-                                                    placeholder={formData.discountType === 'percentage' ? '10' : '100'}
-                                                    className={`border-gray-300 ${errors.discountValue ? 'border-red-500' : ''}`}
-                                                    min="0"
-                                                    step={formData.discountType === 'percentage' ? '1' : '0.01'}
-                                                />
-                                                {errors.discountValue && <p className="text-sm text-red-500 mt-1">{errors.discountValue}</p>}
-                                            </div>
-
-                                            {formData.discountType === 'percentage' && (
-                                                <div>
-                                                    <Label htmlFor="maxDiscount" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                        Max discount (₹)
-                                                    </Label>
-                                                    <Input
-                                                        id="maxDiscount"
-                                                        name="maxDiscount"
-                                                        type="number"
-                                                        value={formData.maxDiscount}
-                                                        onChange={handleChange}
-                                                        placeholder="500"
-                                                        className="border-gray-300"
-                                                        min="0"
-                                                    />
-                                                    <p className="text-xs text-gray-500 mt-2">Optional cap on discount</p>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        <div>
-                                            <Label htmlFor="minOrderAmount" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                Minimum order amount (₹)
-                                            </Label>
-                                            <Input
-                                                id="minOrderAmount"
-                                                name="minOrderAmount"
-                                                type="number"
-                                                value={formData.minOrderAmount}
-                                                onChange={handleChange}
-                                                placeholder="0"
-                                                className="border-gray-300"
-                                                min="0"
-                                            />
-                                            <p className="text-xs text-gray-500 mt-2">Leave 0 for no minimum</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Usage & Validity */}
-                            <Card className="border-gray-200 shadow-sm">
-                                <CardContent className="p-6">
-                                    <h3 className="text-base font-semibold text-gray-900 mb-6">Usage & Validity</h3>
-
-                                    <div className="space-y-5">
-                                        <div className="grid grid-cols-2 gap-5">
-                                            <div>
-                                                <Label htmlFor="endDate" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                    End date <span className="text-red-500">*</span>
-                                                </Label>
-                                                <Input
-                                                    id="endDate"
-                                                    name="endDate"
-                                                    type="date"
-                                                    value={formData.endDate}
-                                                    onChange={handleChange}
-                                                    className={`border-gray-300 ${errors.endDate ? 'border-red-500' : ''}`}
-                                                    min={new Date().toISOString().split('T')[0]}
-                                                />
-                                                {errors.endDate && <p className="text-sm text-red-500 mt-1">{errors.endDate}</p>}
-                                            </div>
-
-                                            <div>
-                                                <Label htmlFor="usageLimit" className="text-sm font-medium text-gray-700 mb-2 block">
-                                                    Usage limit
-                                                </Label>
-                                                <Input
-                                                    id="usageLimit"
-                                                    name="usageLimit"
-                                                    type="number"
-                                                    value={formData.usageLimit}
-                                                    onChange={handleChange}
-                                                    placeholder="Unlimited"
-                                                    className="border-gray-300"
-                                                    min="1"
-                                                />
-                                                <p className="text-xs text-gray-500 mt-2">Leave empty for unlimited</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-
-                        {/* Right Column */}
-                        <div className="space-y-6">
-                            {/* Preview */}
-                            <Card className="border-gray-200 shadow-sm bg-gradient-to-br from-blue-50 to-purple-50">
-                                <CardContent className="p-6">
-                                    <h3 className="text-sm font-semibold text-gray-900 mb-4">Coupon Preview</h3>
-                                    <div className="bg-white rounded-lg p-4 border-2 border-dashed border-blue-300">
-                                        <div className="text-center">
-                                            <p className="text-2xl font-bold font-mono text-blue-600 mb-2">
-                                                {formData.code || 'COUPON'}
-                                            </p>
-                                            <p className="text-sm text-gray-600 mb-3">
-                                                {formData.title || 'Offer Title'}
-                                            </p>
-                                            <div className="bg-green-100 text-green-700 rounded-md py-2 px-3 inline-block font-bold">
-                                                {formData.discountType === 'percentage'
-                                                    ? `${formData.discountValue || 0}% OFF`
-                                                    : `₹${formData.discountValue || 0} OFF`
-                                                }
-                                            </div>
-                                            {formData.minOrderAmount > 0 && (
-                                                <p className="text-xs text-gray-500 mt-3">
-                                                    Min order: ₹{formData.minOrderAmount}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-
-                            {/* Tips */}
-                            <Card className="border-gray-200 shadow-sm bg-blue-50">
-                                <CardContent className="p-6">
-                                    <h3 className="text-sm font-semibold text-gray-900 mb-3">Offer Tips</h3>
-                                    <ul className="text-xs text-gray-600 space-y-2">
-                                        <li>• Use unique, memorable codes</li>
-                                        <li>• Set appropriate min order amounts</li>
-                                        <li>• Cap percentage discounts if needed</li>
-                                        <li>• Limit usage for exclusive offers</li>
-                                        <li>• Track performance regularly</li>
-                                    </ul>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </div>
-                </form>
-            </div>
+            <Button
+              onClick={handleSubmit}
+              disabled={createMutation.isLoading}
+              className="rounded-xl bg-[#C9A06C] px-6 text-white hover:bg-[#B88D57]"
+            >
+              {createMutation.isLoading ? "Creating..." : "Add Offer"}
+            </Button>
+          </div>
         </div>
-    );
+      </div>
+
+      <div className="mx-auto max-w-[1500px] px-4 py-8 sm:px-6 lg:px-8">
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="space-y-6 lg:col-span-2">
+              <Card className="rounded-3xl border-[#E8DED3] bg-white shadow-sm">
+                <CardContent className="p-6 sm:p-8">
+                  <h3 className="mb-6 text-lg font-semibold text-[#2A1416]">
+                    Basic Information
+                  </h3>
+
+                  <div className="space-y-5">
+                    <div>
+                      <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                        Offer Title <span className="text-red-500">*</span>
+                      </Label>
+
+                      <Input
+                        name="title"
+                        value={formData.title}
+                        onChange={handleChange}
+                        placeholder="e.g. Summer Sale 2026"
+                        className={`h-12 rounded-xl border-[#E2D5C5] bg-[#FCFAF7] focus:border-[#C9A06C] ${
+                          errors.title ? "border-red-500" : ""
+                        }`}
+                      />
+
+                      {errors.title && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.title}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                        Coupon Code <span className="text-red-500">*</span>
+                      </Label>
+
+                      <Input
+                        name="code"
+                        value={formData.code}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            code: e.target.value.toUpperCase(),
+                          }))
+                        }
+                        placeholder="e.g. SUMMER50"
+                        className={`h-12 rounded-xl border-[#E2D5C5] bg-[#FCFAF7] font-mono uppercase focus:border-[#C9A06C] ${
+                          errors.code ? "border-red-500" : ""
+                        }`}
+                      />
+
+                      {errors.code && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.code}
+                        </p>
+                      )}
+
+                      <p className="mt-2 text-xs text-[#8A7B72]">
+                        Code will be automatically converted to uppercase.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="rounded-3xl border-[#E8DED3] bg-white shadow-sm">
+                <CardContent className="p-6 sm:p-8">
+                  <h3 className="mb-6 text-lg font-semibold text-[#2A1416]">
+                    Discount Details
+                  </h3>
+
+                  <div className="space-y-5">
+                    <div>
+                      <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                        Discount Type <span className="text-red-500">*</span>
+                      </Label>
+
+                      <select
+                        name="discountType"
+                        value={formData.discountType}
+                        onChange={handleChange}
+                        className="h-12 w-full rounded-xl border border-[#E2D5C5] bg-[#FCFAF7] px-3 text-sm outline-none focus:border-[#C9A06C]"
+                      >
+                        <option value="percentage">Percentage (%)</option>
+                        <option value="fixed">Fixed Amount (₹)</option>
+                      </select>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                      <div>
+                        <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                          Discount Value <span className="text-red-500">*</span>
+                        </Label>
+
+                        <Input
+                          name="discountValue"
+                          type="number"
+                          value={formData.discountValue}
+                          onChange={handleChange}
+                          placeholder={
+                            formData.discountType === "percentage"
+                              ? "10"
+                              : "100"
+                          }
+                          min="0"
+                          step={
+                            formData.discountType === "percentage"
+                              ? "1"
+                              : "0.01"
+                          }
+                          className={`h-12 rounded-xl border-[#E2D5C5] bg-[#FCFAF7] focus:border-[#C9A06C] ${
+                            errors.discountValue ? "border-red-500" : ""
+                          }`}
+                        />
+
+                        {errors.discountValue && (
+                          <p className="mt-1 text-sm text-red-500">
+                            {errors.discountValue}
+                          </p>
+                        )}
+                      </div>
+
+                      {formData.discountType === "percentage" && (
+                        <div>
+                          <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                            Max Discount
+                          </Label>
+
+                          <Input
+                            name="maxDiscount"
+                            type="number"
+                            value={formData.maxDiscount}
+                            onChange={handleChange}
+                            placeholder="500"
+                            min="0"
+                            className="h-12 rounded-xl border-[#E2D5C5] bg-[#FCFAF7] focus:border-[#C9A06C]"
+                          />
+
+                          <p className="mt-2 text-xs text-[#8A7B72]">
+                            Optional discount cap.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                        Minimum Order Amount
+                      </Label>
+
+                      <Input
+                        name="minOrderAmount"
+                        type="number"
+                        value={formData.minOrderAmount}
+                        onChange={handleChange}
+                        placeholder="0"
+                        min="0"
+                        className="h-12 rounded-xl border-[#E2D5C5] bg-[#FCFAF7] focus:border-[#C9A06C]"
+                      />
+
+                      <p className="mt-2 text-xs text-[#8A7B72]">
+                        Leave 0 for no minimum order value.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="rounded-3xl border-[#E8DED3] bg-white shadow-sm">
+                <CardContent className="p-6 sm:p-8">
+                  <h3 className="mb-6 text-lg font-semibold text-[#2A1416]">
+                    Usage & Validity
+                  </h3>
+
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                    <div>
+                      <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                        End Date <span className="text-red-500">*</span>
+                      </Label>
+
+                      <Input
+                        name="endDate"
+                        type="date"
+                        value={formData.endDate}
+                        onChange={handleChange}
+                        min={new Date().toISOString().split("T")[0]}
+                        className={`h-12 rounded-xl border-[#E2D5C5] bg-[#FCFAF7] focus:border-[#C9A06C] ${
+                          errors.endDate ? "border-red-500" : ""
+                        }`}
+                      />
+
+                      {errors.endDate && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.endDate}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <Label className="mb-2 block text-sm font-medium text-[#2A1416]">
+                        Usage Limit
+                      </Label>
+
+                      <Input
+                        name="usageLimit"
+                        type="number"
+                        value={formData.usageLimit}
+                        onChange={handleChange}
+                        placeholder="Unlimited"
+                        min="1"
+                        className="h-12 rounded-xl border-[#E2D5C5] bg-[#FCFAF7] focus:border-[#C9A06C]"
+                      />
+
+                      <p className="mt-2 text-xs text-[#8A7B72]">
+                        Leave empty for unlimited usage.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="space-y-6">
+              <Card className="rounded-3xl border-[#E8DED3] bg-white shadow-sm lg:sticky lg:top-28">
+                <CardContent className="p-6">
+                  <h3 className="mb-4 text-sm font-semibold text-[#2A1416]">
+                    Coupon Preview
+                  </h3>
+
+                  <div className="rounded-3xl border-2 border-dashed border-[#C9A06C] bg-[#FFF9F1] p-5 text-center">
+                    <p className="mb-2 font-mono text-2xl font-bold text-[#C9A06C]">
+                      {formData.code || "COUPON"}
+                    </p>
+
+                    <p className="mb-4 text-sm text-[#7A6A62]">
+                      {formData.title || "Offer Title"}
+                    </p>
+
+                    <div className="inline-flex rounded-xl bg-[#C9A06C] px-4 py-2 text-sm font-bold text-white">
+                      {formData.discountType === "percentage"
+                        ? `${formData.discountValue || 0}% OFF`
+                        : `₹${formData.discountValue || 0} OFF`}
+                    </div>
+
+                    {formData.minOrderAmount > 0 && (
+                      <p className="mt-4 text-xs text-[#8A7B72]">
+                        Min order: ₹{formData.minOrderAmount}
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="rounded-3xl border-[#E8DED3] bg-[#FFF9F1] shadow-sm">
+                <CardContent className="p-6">
+                  <h3 className="mb-3 text-sm font-semibold text-[#2A1416]">
+                    Offer Tips
+                  </h3>
+
+                  <ul className="space-y-2 text-xs leading-5 text-[#7A6A62]">
+                    <li>• Use unique and memorable coupon codes</li>
+                    <li>• Add minimum order amount for better margin</li>
+                    <li>• Cap percentage discounts if needed</li>
+                    <li>• Use expiry date for urgency</li>
+                    <li>• Limit usage for exclusive offers</li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }
